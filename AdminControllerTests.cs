@@ -138,5 +138,27 @@ namespace FilmTests.Controllers
             userManagerMock.Verify(a => a.FindByIdAsync(userId));
             userManagerMock.Verify(a => a.AddToRoleAsync(user, roleId));
         }
+        
+        [TestMethod]
+        public void PromoteToRole_RoleIsUser_RoleSetToModerator()
+        {
+            const string roleId = "moderator";
+            const string userId = "1";
+            roleManagerMock.Setup(p => p.FindByIdAsync(roleId)).ReturnsAsync(new IdentityRole
+            {
+                Id = roleId,
+                Name = "Moderator Account"
+            });
+            var user = new ApplicationUser
+            {
+                Id = userId,
+                Email = "somemail@gmail.com"
+            };
+            userManagerMock.Setup(a => a.FindByIdAsync(userId)).ReturnsAsync(user);
+            controller.PromoteToRole(userId, roleId);
+            roleManagerMock.Verify(a => a.FindByIdAsync(roleId));
+            userManagerMock.Verify(a => a.FindByIdAsync(userId));
+            userManagerMock.Verify(a => a.AddToRoleAsync(user, roleId));
+        }
     }
 }
